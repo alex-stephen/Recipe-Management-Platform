@@ -6,7 +6,8 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
 const nextConfig = {
   async rewrites() {
     return [
-      { source: '/api/:path*', destination: `${API_URL}/api/:path*` },
+      { source: '/api/:path*', destination: `${API_URL}/api/:path*` }, // if you keep REST
+      { source: '/graphql', destination: `${API_URL}/api/graphql` },       // GraphQL proxy
     ];
   },
 };
