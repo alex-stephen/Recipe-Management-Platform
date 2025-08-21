@@ -7,6 +7,9 @@ import (
 	"os"
 	"time"
 
+	"github.com/99designs/gqlgen/graphql/handler"
+	"github.com/alex-stephen/recipes/src/app/api/graphql"
+	"github.com/alex-stephen/recipes/src/app/api/graphql/generated"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
@@ -17,11 +20,11 @@ import (
 
 // Recipe represents a recipe document in MongoDB
 type Recipe struct {
-	ID          primitive.ObjectID `bson:"_id,omitempty" json:"id"`
-	Title       string             `bson:"title" json:"title"`
-	Ingredients []string           `bson:"ingredients" json:"ingredients"`
-	Steps       []string           `bson:"steps" json:"steps"`
-	CreatedAt   time.Time          `bson:"createdAt" json:"createdAt"`
+	ID           primitive.ObjectID `bson:"_id,omitempty" json:"id"`
+	Title        string             `bson:"title" json:"title"`
+	Ingredients  []string           `bson:"ingredients" json:"ingredients"`
+	Instructions []string           `bson:"instructions" json:"instructions"`
+	CreatedAt    time.Time          `bson:"createdAt" json:"createdAt"`
 }
 
 // getenv helper
@@ -30,6 +33,21 @@ func getenv(k, def string) string {
 		return v
 	}
 	return def
+}
+
+// graphqlHandler defines the GQLgen server as a Gin handler
+func graphqlHandler(collection *mongo.Collection) gin.HandlerFunc {
+	// NewExecutableSchema and Config are in the generated.go file
+	// Resolver is in the resolver.go file
+	c := generated.Config{
+		Resolvers: &graphql.Resolver{
+			DB: collection,
+		},
+	}
+	srv := handler.NewDefaultServer(generated.NewExecutableSchema(c))
+	return func(ctx *gin.Context) {
+		srv.ServeHTTP(ctx.Writer, ctx.Request)
+	}
 }
 
 func main() {
@@ -53,7 +71,7 @@ func main() {
 	db := client.Database(dbName)
 	recipes := db.Collection("recipes")
 
-	// --- Gin router + CORS ---
+	// --- Gin router + CORS -- -
 	r := gin.Default()
 	r.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"http://localhost:3000"},
@@ -65,6 +83,9 @@ func main() {
 
 	api := r.Group("/api")
 	{
+		// GraphQL endpoint
+		api.POST("/graphql", graphqlHandler(recipes))
+
 		// Health check
 		api.GET("/health", func(c *gin.Context) {
 			c.JSON(http.StatusOK, gin.H{"status": "ok", "time": time.Now().UTC()})
@@ -101,9 +122,9 @@ func main() {
 		// Add a new recipe
 		api.POST("/recipes", func(c *gin.Context) {
 			var body struct {
-				Title       string   `json:"title"`
-				Ingredients []string `json:"ingredients"`
-				Steps       []string `json:"steps"`
+				Title        string   `json:"title"`
+				Ingredients  []string `json:"ingredients"`
+				Instructions []string `json:"Instructions"`
 			}
 			if err := c.BindJSON(&body); err != nil || body.Title == "" {
 				c.JSON(http.StatusBadRequest, gin.H{"error": "title is required"})
@@ -111,10 +132,10 @@ func main() {
 			}
 
 			doc := Recipe{
-				Title:       body.Title,
-				Ingredients: body.Ingredients,
-				Steps:       body.Steps,
-				CreatedAt:   time.Now().UTC(),
+				Title:        body.Title,
+				Ingredients:  body.Ingredients,
+				Instructions: body.Instructions,
+				CreatedAt:    time.Now().UTC(),
 			}
 
 			ctx, cancel := context.WithTimeout(c, 5*time.Second)

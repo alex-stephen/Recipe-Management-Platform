@@ -1,0 +1,35 @@
+# Keep it simple & scalable: IDs and times as strings for now
+# (we convert ObjectID and time.Time in resolvers)
+
+type Recipe {
+  id: ID!
+  title: String!
+  ingredients: [String!]!
+  instructions: [String!]!
+  createdAt: String!
+}
+
+input RecipeInput {
+  title: String!
+  ingredients: [String!]!
+  instructions: [String!]!
+}
+
+input UpdateRecipeInput {
+  id: ID!
+  title: String
+  ingredients: [String!]
+  instructions: [String!]
+}
+
+type Query {
+  # Paginated list with basic search
+  recipes(limit: Int = 20, offset: Int = 0, search: String): [Recipe!]!
+  recipe(id: ID!): Recipe
+}
+
+type Mutation {
+  createRecipe(input: RecipeInput!): Recipe!
+  updateRecipe(input: UpdateRecipeInput!): Recipe!
+  deleteRecipe(id: ID!): Boolean!
+}
