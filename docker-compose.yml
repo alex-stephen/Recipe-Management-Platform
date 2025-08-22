@@ -1,32 +1,28 @@
 services:
-  mongodb:
-    image: mongo:7
-    container_name: mongodb
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
     ports:
-      - "27017:27017"
+      - "8080:8080"
     environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: example
-    volumes:
-      - mongo_data:/data/db
-    healthcheck:
-      test:
-        ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-  # Optional: simple DB UI at http://localhost:8081
-  mongo-express:
-    image: mongo-express:1
-    ports:
-      - "8081:8081"
-    environment:
-      ME_CONFIG_MONGODB_ADMINUSERNAME: root
-      ME_CONFIG_MONGODB_ADMINPASSWORD: example
-      ME_CONFIG_MONGODB_URL: mongodb://root:example@mongodb:27017/
+      # These should match the values in config.yaml or be overridden by environment variables
+      # For Docker Compose, it's common to pass them as environment variables
+      SERVER_PORT: ":8080"
+      DATABASE_URL: "mongodb://mongodb:27017"
+      DATABASE_NAME: "recipes_db"
+      DATABASE_COLLECTION: "recipes"
     depends_on:
       - mongodb
+    volumes:
+      - .:/app # Mount the current directory into the container for live reloading (optional, remove for production)
+
+  mongodb:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
 
 volumes:
-  mongo_data:
+  mongodb_data:

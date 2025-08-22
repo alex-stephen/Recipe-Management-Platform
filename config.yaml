@@ -1,0 +1,6 @@
+server:
+  port: ":8080"
+database:
+  url: "mongodb://localhost:27017"
+  name: "recipes_db"
+  collection: "recipes"
