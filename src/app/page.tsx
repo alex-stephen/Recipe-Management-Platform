@@ -107,7 +107,7 @@ export default function Home() {
 
   return (
     <main className="mx-auto max-w-2xl p-6">
-      <h1 className="text-3xl font-bold mb-6">Recipe Catalogue (GraphQL)</h1>
+      <h1 className="text-3xl font-bold mb-6">Recipe Catalogue</h1>
 
       <form onSubmit={submit} className="space-y-3 mb-8">
         <input
