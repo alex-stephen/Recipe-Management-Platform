@@ -7,7 +7,6 @@ require (
 	github.com/graphql-go/graphql v0.8.1
 	github.com/graphql-go/handler v0.2.4
 	github.com/json-iterator/go v1.1.12
-	github.com/pkg/errors v0.9.1
 	github.com/spf13/viper v1.20.1
 	go.mongodb.org/mongo-driver v1.17.4
 )
