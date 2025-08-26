@@ -5,11 +5,13 @@ import (
 	"net/http"
 
 	"github.com/alex-stephen/recipes/middleware"
+	"github.com/alex-stephen/recipes/recipe"
 )
 
 func main() {
 	router := http.NewServeMux()
-	loadRoutes(router)
+	handler := &recipe.Handler{}
+	router.HandleFunc("POST /recipes/", handler.Create)
 
 	stack := middleware.CreateStack(
 		middleware.Logging,
