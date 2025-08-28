@@ -1,0 +1,28 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8081:8080"
+    environment:
+      # These should match the values in config.yaml or be overridden by environment variables
+      # For Docker Compose, it's common to pass them as environment variables
+      SERVER_PORT: ":8080"
+      DATABASE_URL: "mongodb://mongodb:27017"
+      DATABASE_NAME: "recipes_db"
+      DATABASE_COLLECTION: "recipes"
+    depends_on:
+      - mongodb
+    volumes:
+      - .:/app # Mount the current directory into the container for live reloading (optional, remove for production)
+
+  mongodb:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+
+volumes:
+  mongodb_data:
