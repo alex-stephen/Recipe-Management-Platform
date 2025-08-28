@@ -10,6 +10,10 @@ type Recipe struct {
 	Steps       []string           `bson:"steps" json:"steps"`
 }
 
+type Category struct {
+	//TBD
+}
+
 type Ingredient struct {
 	Name     string `bson:"name" json:"name"`
 	Quantity string `bson:"quantity" json:"quantity"`

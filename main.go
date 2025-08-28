@@ -14,7 +14,7 @@ func main() {
 	router := http.NewServeMux()
 	db := database.GetCollection(client, "recipes")
 	handler := recipe.NewHandler(db)
-	router.HandleFunc("POST /recipes/", handler.Create)
+	router.HandleFunc("POST /recipes", handler.Create)
 	router.HandleFunc("GET /recipes/{id}", handler.GetRecipe)
 	router.HandleFunc("GET /recipes", handler.GetAllRecipes)
 
