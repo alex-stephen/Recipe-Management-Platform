@@ -16,6 +16,7 @@ func main() {
 	handler := recipe.NewHandler(db)
 	router.HandleFunc("POST /recipes/", handler.Create)
 	router.HandleFunc("GET /recipes/{id}", handler.GetRecipe)
+	router.HandleFunc("GET /recipes", handler.GetAllRecipes)
 
 	stack := middleware.CreateStack(
 		middleware.Logging,

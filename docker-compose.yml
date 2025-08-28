@@ -17,6 +17,15 @@ services:
     volumes:
       - .:/app # Mount the current directory into the container for live reloading (optional, remove for production)
 
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+
   mongodb:
     image: mongo:latest
     ports:

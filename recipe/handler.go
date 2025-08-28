@@ -35,6 +35,24 @@ func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(result)
 }
 
+func (h *Handler) GetAllRecipes(w http.ResponseWriter, r *http.Request) {
+	cursor, err := h.collection.Find(context.Background(), bson.M{})
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	defer cursor.Close(context.Background())
+
+	var recipes []Recipe
+	if err = cursor.All(context.Background(), &recipes); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(recipes)
+}
+
 func (h *Handler) GetRecipe(w http.ResponseWriter, r *http.Request) {
 	id := r.PathValue("id")
 	objID, err := primitive.ObjectIDFromHex(id)
