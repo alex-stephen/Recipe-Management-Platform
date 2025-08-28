@@ -2,11 +2,16 @@
 
 import { useState, useEffect } from 'react';
 
+interface Ingredient {
+  name: string;
+  quantity: string;
+}
+
 interface Recipe {
   id: string;
   name: string;
   description: string;
-  ingredients: string[];
+  ingredients: Ingredient[];
   steps: string[];
 }
 
@@ -117,6 +122,14 @@ export default function Home() {
             <li key={recipe.id} className="mb-2 p-2 border rounded">
               <h3 className="font-semibold">{recipe.name}</h3>
               <p className="text-sm">{recipe.description}</p>
+              <ul className="text-sm list-disc pl-5">
+                {recipe.ingredients?.map((ing, i) => (
+                  <li key={i}>
+                    {ing?.name} — {ing.quantity}
+                  </li>
+                ))}
+              </ul>
+              <p className="text-sm">Steps: {recipe.steps}</p>
             </li>
           ))}
         </ul>
