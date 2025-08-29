@@ -227,29 +227,40 @@ export default function Home() {
         <h2 className="text-2xl font-bold mb-4">Existing Recipes</h2>
         <ul>
           {recipes.map((recipe, index) => (
-            <li key={recipe.id ?? index} className="mb-2 p-2 border rounded">
-              <h3 className="font-semibold">{recipe.name}</h3>
-              <p className="text-sm">{recipe.description}</p>
+            <li
+              key={recipe.id ?? index}
+              className="mb-2 p-2 border rounded grid grid-cols-[1fr_auto] gap-4"
+            >
+              <div>
+                <h3 className="font-semibold">{recipe.name}</h3>
+                <p className="text-sm">{recipe.description}</p>
+
+                <ul className="text-sm list-disc pl-5">
+                  {recipe.ingredients?.map((ing, i) => (
+                    <li key={i} className="grid grid-cols-[150px_100px] gap-4">
+                      <span>{ing?.name}</span>
+                      <span>{ing.quantity}</span>
+                    </li>
+                  ))}
+                </ul>
+
+                <label className="text-sm">Steps:</label>
+                <ul className="text-sm list-decimal pl-5">
+                  {recipe.steps?.map((step, i) => (
+                    <li key={i}>
+                      <span className="text-sm">{step}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
               {recipe.imageUrls && recipe.imageUrls.length > 0 && (
-                <img src={recipe.imageUrls[0]} alt={recipe.name} className="w-2 h-auto object-cover rounded" />
+                <img
+                  src={recipe.imageUrls[0]}
+                  alt={recipe.name}
+                  className="w-32 h-32 object-cover rounded self-start"
+                />
               )}
-              <ul className="text-sm list-disc pl-5">
-                {recipe.ingredients?.map((ing, i) => (
-                  <li key={i} className="grid grid-cols-[150px_100px] gap-4">
-                    <span>{ing?.name}</span>
-                    <span>{ing.quantity}</span>
-                  </li>
-                ))}
-              </ul>
-              <label className='text-sm'>Steps:</label>
-              <ul className="text-sm list-decimal pl-5">
-                {recipe.steps?.map((step, i) => (
-                  <li key={i}>
-                   <span className="text-sm">{step}</span>
-                  </li>
-                ))}
-             
-              </ul>
             </li>
           ))}
         </ul>
