@@ -14,7 +14,7 @@ interface Recipe {
   description: string;
   ingredients: Ingredient[];
   steps: string[];
-  imageIds: string[];
+  imageUrls: string[];
 }
 
 const UNIT_OPTIONS = ["g", "kg", "tsp", "tbsp", "ml", "L", "full", "1/2"];
@@ -45,7 +45,6 @@ export default function Home() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     console.log("images", imageUrls)
-    console.log("images files", imageFiles)
     const newRecipe = {
       name,
       description,
@@ -69,6 +68,8 @@ export default function Home() {
       setDescription('');
       setIngredients([]);
       setSteps([]);
+      setImageFiles([]);
+      setImageUrls([]);
     } else {
       console.error('Failed to create recipe');
     }
@@ -229,6 +230,9 @@ export default function Home() {
             <li key={recipe.id ?? index} className="mb-2 p-2 border rounded">
               <h3 className="font-semibold">{recipe.name}</h3>
               <p className="text-sm">{recipe.description}</p>
+              {recipe.imageUrls && recipe.imageUrls.length > 0 && (
+                <img src={recipe.imageUrls[0]} alt={recipe.name} className="w-2 h-auto object-cover rounded" />
+              )}
               <ul className="text-sm list-disc pl-5">
                 {recipe.ingredients?.map((ing, i) => (
                   <li key={i} className="grid grid-cols-[150px_100px] gap-4">

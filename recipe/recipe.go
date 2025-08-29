@@ -8,7 +8,7 @@ type Recipe struct {
 	Description string             `bson:"description"   json:"description"`
 	Ingredients []Ingredient       `bson:"ingredients"   json:"ingredients"`
 	Steps       []string           `bson:"steps"         json:"steps"`
-	ImageIDs    []string           `bson:"image_ids"     json:"image_ids"`
+	ImageUrls   []string           `bson:"image_urls"    json:"imageUrls"`
 }
 
 type Category struct {

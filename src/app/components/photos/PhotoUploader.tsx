@@ -1,72 +1,77 @@
 import React, { useState, ChangeEvent, useRef, useEffect } from 'react';
 
 interface PhotoUploaderProps {
-  onChange: (files: File[], urls: string[]) => void;
+  onChange: (files: File[], base64s: string[]) => void;
 }
 
 const PhotoUploader: React.FC<PhotoUploaderProps> = ({ onChange }) => {
-    const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
-    const [previewUrls, setPreviewUrls] = useState<string[]>([]);
-    const fileInputRef = useRef<HTMLInputElement>(null);
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [base64Urls, setBase64Urls] = useState<string[]>([]);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-    const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
-        if (!event.target.files) return;
+  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+    if (!event.target.files) return;
 
-        const filesArray = Array.from(event.target.files);
-        const newPreviewUrls = filesArray.map(file => URL.createObjectURL(file));
+    const filesArray = Array.from(event.target.files);
+    const newBase64Urls: string[] = [];
 
-        // Compute new state arrays
-        const updatedFiles = [...selectedFiles, ...filesArray];
-        const updatedUrls = [...previewUrls, ...newPreviewUrls];
+    filesArray.forEach((file) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        if (reader.result) {
+          newBase64Urls.push(reader.result as string);
 
-        setSelectedFiles(updatedFiles);
-        setPreviewUrls(updatedUrls);
+          // When all files have been read, update state
+          if (newBase64Urls.length === filesArray.length) {
+            const updatedFiles = [...selectedFiles, ...filesArray];
+            const updatedBase64s = [...base64Urls, ...newBase64Urls];
 
-        // send correct updated arrays to parent
-        onChange(updatedFiles, updatedUrls);
-    };
+            setSelectedFiles(updatedFiles);
+            setBase64Urls(updatedBase64s);
 
-    useEffect(() => {
-        return () => {
-        previewUrls.forEach(url => URL.revokeObjectURL(url));
-        };
-    }, [previewUrls]);
+            onChange(updatedFiles, updatedBase64s);
+          }
+        }
+      };
+      reader.readAsDataURL(file);
+    });
+  };
 
     return (
-    <div>
-        <div className="mb-4">
-            <button
-                type="button"
-                className="block bg-gray-600 text-white px-4 py-2 rounded"
-                onClick={() => fileInputRef.current?.click()}
-            >
-                Select Photos
-            </button>
-            <input
-                type="file"
-                ref={fileInputRef}
-                accept="image/*"
-                hidden
-                multiple
-                onChange={handleFileChange}
-            />
-        </div>
-
-        {previewUrls.length > 0 && (
-            <div className="flex gap-4 flex-wrap">
-            {previewUrls.map((url, i) => (
-                <div key={i} className="w-[100px] h-[100px] flex-shrink-0">
-                <img
-                    src={url}
-                    alt={`Preview ${i}`}
-                    className="object-cover rounded border"
-                    style={{ width: 100, height: 100 }}
+        <div>
+            <div className="mb-4">
+                <button
+                    type="button"
+                    className="block bg-gray-600 text-white px-4 py-2 rounded"
+                    onClick={() => fileInputRef.current?.click()}
+                >
+                    Select Photos
+                </button>
+                <input
+                    type="file"
+                    ref={fileInputRef}
+                    accept="image/*"
+                    hidden
+                    multiple
+                    onChange={handleFileChange}
                 />
-                </div>
-            ))}
             </div>
-        )}
-    </div>
+
+            {base64Urls.length > 0 && (
+                <div className="flex gap-4 flex-wrap">
+                {base64Urls.map((url, i) => (
+                    <div key={i} className="w-[100px] h-[100px] flex-shrink-0">
+                    <img
+                        src={url}
+                        alt={`Preview ${i}`}
+                        className="object-cover rounded border"
+                        style={{ width: 100, height: 100 }}
+                    />
+                    </div>
+                ))}
+                </div>
+            )}
+        </div>
     );
 };
 
