@@ -7,7 +7,7 @@ WORKDIR /app
 
 COPY . .
 
-RUN go install github.com/cosmtrek/air@latest
+RUN go install github.com/air-verse/air@latest
 
 EXPOSE 8080
 
