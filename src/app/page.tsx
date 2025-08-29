@@ -29,6 +29,8 @@ export default function Home() {
   const [ingredientUnit, setIngredientUnit] = useState("");
   const [steps, setSteps] = useState<string[]>([]);
   const [currentStep, setCurrentStep] = useState('');
+  const [imageFiles, setImageFiles] = useState<File[]>([]);
+  const [imageUrls, setImageUrls] = useState<string[]>([]);
 
   useEffect(() => {
     async function fetchRecipes() {
@@ -42,12 +44,14 @@ export default function Home() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
+    console.log("images", imageUrls)
+    console.log("images files", imageFiles)
     const newRecipe = {
       name,
       description,
       ingredients,
-      steps: steps,
+      steps,
+      imageUrls,
     };
 
     const res = await fetch('/api/recipes', {
@@ -201,9 +205,13 @@ export default function Home() {
           + Add Step
         </button>
 
-         <div className="space-y-2">
-          <PhotoUploader />
-        </div>
+         {/* Photo uploader */}
+        <PhotoUploader
+          onChange={(files, urls) => {
+            setImageFiles(files);
+            setImageUrls(urls);
+          }}
+        />
 
         <div className="grid">
           <button
@@ -217,8 +225,8 @@ export default function Home() {
       <div>
         <h2 className="text-2xl font-bold mb-4">Existing Recipes</h2>
         <ul>
-          {recipes.map((recipe) => (
-            <li key={recipe.id} className="mb-2 p-2 border rounded">
+          {recipes.map((recipe, index) => (
+            <li key={recipe.id ?? index} className="mb-2 p-2 border rounded">
               <h3 className="font-semibold">{recipe.name}</h3>
               <p className="text-sm">{recipe.description}</p>
               <ul className="text-sm list-disc pl-5">
