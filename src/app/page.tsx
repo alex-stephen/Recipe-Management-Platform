@@ -259,8 +259,9 @@ export default function Home() {
                 <Image
                     src={recipe.imageUrls[0]}
                     alt={recipe.name}
-                    fill
-                    className="object-cover rounded self-start"
+                    width={128}
+                    height={128}
+                    className="w-32 h-32 object-cover rounded self-center"
                 />
               )}
             </li>
