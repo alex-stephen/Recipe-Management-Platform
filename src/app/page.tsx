@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect, ChangeEvent } from 'react';
+import { useState, useEffect } from 'react';
+import Image from "next/image";
 import PhotoUploader from './components/photos/PhotoUploader';
 
 interface Ingredient {
@@ -29,7 +30,7 @@ export default function Home() {
   const [ingredientUnit, setIngredientUnit] = useState("");
   const [steps, setSteps] = useState<string[]>([]);
   const [currentStep, setCurrentStep] = useState('');
-  const [imageFiles, setImageFiles] = useState<File[]>([]);
+  const [,setImageFiles] = useState<File[]>([]);
   const [imageUrls, setImageUrls] = useState<string[]>([]);
 
   useEffect(() => {
@@ -77,7 +78,7 @@ export default function Home() {
 
   return (
     <main className="mx-auto max-w-2xl p-6">
-      <h1 className="text-3xl font-bold mb-6">Recipe Catalogue</h1>
+      <h1 className="text-3xl font-bold mb-6">{`Sarah's Recipe Website`}</h1>
 
       <form onSubmit={handleSubmit} className="space-y-3 mb-8">
         <input
@@ -255,10 +256,11 @@ export default function Home() {
               </div>
 
               {recipe.imageUrls && recipe.imageUrls.length > 0 && (
-                <img
-                  src={recipe.imageUrls[0]}
-                  alt={recipe.name}
-                  className="w-32 h-32 object-cover rounded self-start"
+                <Image
+                    src={recipe.imageUrls[0]}
+                    alt={recipe.name}
+                    fill
+                    className="object-cover rounded self-start"
                 />
               )}
             </li>

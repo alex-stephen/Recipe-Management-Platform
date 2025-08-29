@@ -1,4 +1,5 @@
-import React, { useState, ChangeEvent, useRef, useEffect } from 'react';
+import React, { useState, ChangeEvent, useRef } from 'react';
+import Image from "next/image";
 
 interface PhotoUploaderProps {
   onChange: (files: File[], base64s: string[]) => void;
@@ -61,11 +62,11 @@ const PhotoUploader: React.FC<PhotoUploaderProps> = ({ onChange }) => {
                 <div className="flex gap-4 flex-wrap">
                 {base64Urls.map((url, i) => (
                     <div key={i} className="w-[100px] h-[100px] flex-shrink-0">
-                    <img
+                    <Image
                         src={url}
                         alt={`Preview ${i}`}
+                        fill
                         className="object-cover rounded border"
-                        style={{ width: 100, height: 100 }}
                     />
                     </div>
                 ))}
