@@ -43,6 +43,23 @@ export default function Home() {
     fetchRecipes();
   }, []);
 
+  useEffect(() => {
+    async function getConsumedItems() {
+      const res = await fetch("/api/yazio");
+      const data = await res.json();
+      console.log("Consumed items:", data);
+    }
+    getConsumedItems();
+  }, []);
+
+  // useEffect(() => {
+  //   async function getYazioItems() {
+  //     const items = await yazio.user.getConsumedItems({ date: new Date() });
+  //     console.log("Consumed items:", items);
+  //   }
+  //   getYazioItems()
+  // }, []);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     console.log("images", imageUrls)
@@ -258,7 +275,7 @@ export default function Home() {
               {recipe.imageUrls && recipe.imageUrls.length > 0 && (
                 <Image
                     src={recipe.imageUrls[0]}
-                    alt={recipe.name}
+                    alt={recipe.name || "Recipe image"}
                     width={128}
                     height={128}
                     className="w-32 h-32 object-cover rounded self-center"
