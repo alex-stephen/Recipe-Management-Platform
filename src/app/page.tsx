@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Image from "next/image";
 import PhotoUploader from './components/photos/PhotoUploader';
 
@@ -30,6 +30,7 @@ export default function Home() {
   const [ingredientUnit, setIngredientUnit] = useState("");
   const [steps, setSteps] = useState<string[]>([]);
   const [currentStep, setCurrentStep] = useState('');
+  const [recipeNutrients, setRecipeNutrients] = useState<Record<string, number>>({});
   const [,setImageFiles] = useState<File[]>([]);
   const [imageUrls, setImageUrls] = useState<string[]>([]);
 
@@ -43,22 +44,82 @@ export default function Home() {
     fetchRecipes();
   }, []);
 
-  useEffect(() => {
-    async function getConsumedItems() {
-      const res = await fetch("/api/yazio");
-      const data = await res.json();
-      console.log("Consumed items:", data);
-    }
-    getConsumedItems();
-  }, []);
+  function mergeNutrients(
+    base: Record<string, number>,
+    added: Record<string, number>,
+    multiplier: number
+  ): Record<string, number> {
+    const result: Record<string, number> = { ...base };
 
-  // useEffect(() => {
-  //   async function getYazioItems() {
-  //     const items = await yazio.user.getConsumedItems({ date: new Date() });
-  //     console.log("Consumed items:", items);
-  //   }
-  //   getYazioItems()
-  // }, []);
+    for (const [key, value] of Object.entries(added)) {
+      const scaledValue = value * multiplier;
+      result[key] = (result[key] ?? 0) + scaledValue;
+    }
+
+    return result;
+  }
+
+  const handleCalculateNutrition = async (recipe: Recipe) => {
+    let totals: Record<string, number> = {};
+
+    for (let i = 0; i < recipe.ingredients.length; i++) {
+      const ingredient = recipe.ingredients[i];
+      const product = await fetchIngredient(ingredient.name);
+
+      if (!product) continue;
+
+      // scale: (user quantity / product serving_quantity)
+      const qty = parseFloat(ingredient.quantity ?? "0");
+      const multiplier = qty / (product.serving_quantity || 1);
+
+      totals = mergeNutrients(totals, product.nutrients, multiplier);
+    }
+
+    setRecipeNutrients(totals);
+  };
+
+  async function fetchIngredient(foodItem: string) {
+      const res = await fetch(`/api/yazio/search?q=${foodItem}`);
+      const result = await res.json();
+      console.log("Best product:", result);
+      console.log("Nutrients:", result.nutrients);
+      return result
+  }
+
+
+
+  //Print what we have for recipes.
+  useEffect(() => {
+    console.log("Recipes updated:", recipes);
+  }, [recipes]);
+
+  useEffect(() => {
+    async function getBreakfastItems() {
+      try {
+        const res = await fetch("/api/yazio?meal=breakfast");
+        const data = await res.json();
+
+        if (!data.products || data.products.length === 0) return;
+
+        data.products.forEach((item: any) => {
+          const n = item.nutrients;
+
+          const protein = n["nutrient.protein"];
+          const carbs = n["nutrient.carb"];
+          const fat = n["nutrient.fat"];
+          const sodiumMg = n["nutrient.sodium"]; // convert g → mg
+          const kcal = n["energy.energy"];
+
+          console.log(item.name + " - " + item.brand)
+          console.log({ protein, carbs, fat, sodiumMg, kcal });
+        });
+      } catch (err) {
+        console.error("Failed to fetch dinner items:", err);
+      }
+    }
+
+    getBreakfastItems();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -281,6 +342,19 @@ export default function Home() {
                     className="w-32 h-32 object-cover rounded self-center"
                 />
               )}
+
+              <button 
+                onClick={() =>handleCalculateNutrition(recipe)}
+                className="mb-2 p-2 border rounded grid grid-cols-[1fr_auto] gap-4"
+                >
+                  Calculate Nutrition
+              </button>
+
+              {Object.entries(recipeNutrients).map(([nutrient, value]) => (
+                <div key={nutrient}>
+                  {nutrient}: {value.toFixed(2)}
+                </div>
+              ))}
             </li>
           ))}
         </ul>
