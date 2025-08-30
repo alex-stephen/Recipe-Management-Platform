@@ -66,7 +66,7 @@ const PhotoUploader: React.FC<PhotoUploaderProps> = ({ onChange }) => {
                         src={url}
                         alt={`Preview ${i}`}
                         fill
-                        className="object-cover rounded border"
+                        className="w-30 h-30 object-cover rounded border"
                     />
                     </div>
                 ))}
