@@ -3,22 +3,10 @@
 import { useState, useEffect } from 'react';
 import Image from "next/image";
 import PhotoUploader from './components/photos/PhotoUploader';
+import { Ingredient, Recipe } from './types/recipe';
+import { NutrientDisplay } from './components/nutrients/NutrientDisplay';
 
-interface Ingredient {
-  name: string;
-  quantity: string;
-}
-
-interface Recipe {
-  id: string;
-  name: string;
-  description: string;
-  ingredients: Ingredient[];
-  steps: string[];
-  imageUrls: string[];
-}
-
-const UNIT_OPTIONS = ["g", "kg", "tsp", "tbsp", "ml", "L", "full", "1/2"];
+const UNIT_OPTIONS = ["pcs", "g", "kg", "tsp", "tbsp", "ml", "L", "full", "1/2"];
 
 export default function Home() {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
@@ -43,15 +31,54 @@ export default function Home() {
     fetchRecipes();
   }, []);
 
+  // useEffect(() => {
+  //   async function getNutrients(ing: Ingredient[]) {
+  //     try {
+  //       const response = await fetch('/api/nutrition', {
+  //         method: 'POST',
+  //         headers: { 'Content-Type': 'application/json' },
+  //         body: JSON.stringify({ ingredients: ing }),
+  //       });
+  //       const data = await response.json();
+  //       console.log("Totals:", data.totals);
+  //     } catch (err) {
+  //       console.error("Fetch failed:", err);
+  //     }
+  //   }
+
+  //   if (recipes.length > 0 && recipes[recipes.length - 1].ingredients) {
+  //     getNutrients(recipes[recipes.length - 1].ingredients);
+  //   }
+  // }, [recipes]);
+
+  async function getNutrients(ing: Ingredient[]) {
+    try {
+      const response = await fetch('/api/nutrition', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ingredients: ing }),
+      });
+      const data = await response.json();
+      return data.totals;
+    } catch (err) {
+      console.error("Fetch failed:", err);
+      return null;
+    }
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("images", imageUrls)
+
+    const nutrients = await getNutrients(ingredients)
+    console.log(nutrients)
+
     const newRecipe = {
       name,
       description,
       ingredients,
       steps,
       imageUrls,
+      nutrients,
     };
 
     const res = await fetch('/api/recipes', {
@@ -264,6 +291,7 @@ export default function Home() {
                     className="w-32 h-32 object-cover rounded self-center"
                 />
               )}
+              <NutrientDisplay recipe={recipe}/>
             </li>
           ))}
         </ul>
