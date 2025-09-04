@@ -5,6 +5,7 @@ import Image from "next/image";
 import PhotoUploader from './components/photos/PhotoUploader';
 import { Ingredient, Recipe } from './types/recipe';
 import { NutrientDisplay } from './components/nutrients/NutrientDisplay';
+import Link from 'next/link';
 
 const UNIT_OPTIONS = ["pcs", "g", "kg", "tsp", "tbsp", "ml", "L", "full", "1/2"];
 
@@ -31,26 +32,6 @@ export default function Home() {
     fetchRecipes();
   }, []);
 
-  // useEffect(() => {
-  //   async function getNutrients(ing: Ingredient[]) {
-  //     try {
-  //       const response = await fetch('/api/nutrition', {
-  //         method: 'POST',
-  //         headers: { 'Content-Type': 'application/json' },
-  //         body: JSON.stringify({ ingredients: ing }),
-  //       });
-  //       const data = await response.json();
-  //       console.log("Totals:", data.totals);
-  //     } catch (err) {
-  //       console.error("Fetch failed:", err);
-  //     }
-  //   }
-
-  //   if (recipes.length > 0 && recipes[recipes.length - 1].ingredients) {
-  //     getNutrients(recipes[recipes.length - 1].ingredients);
-  //   }
-  // }, [recipes]);
-
   async function getNutrients(ing: Ingredient[]) {
     try {
       const response = await fetch('/api/nutrition', {
@@ -70,7 +51,6 @@ export default function Home() {
     e.preventDefault();
 
     const nutrients = await getNutrients(ingredients)
-    console.log(nutrients)
 
     const newRecipe = {
       name,
@@ -106,6 +86,12 @@ export default function Home() {
   return (
     <main className="mx-auto max-w-2xl p-6">
       <h1 className="text-3xl font-bold mb-6">{`Sarah's Recipe Website`}</h1>
+
+      <div className="mb-4">
+        <Link href="/home" className="text-blue-500 hover:underline">
+          Go to Home Page
+        </Link>
+      </div>
 
       <form onSubmit={handleSubmit} className="space-y-3 mb-8">
         <input
