@@ -1,3 +1,4 @@
+import { List, Typography } from "antd";
 import { Recipe } from "../../types/recipe";
 
 interface NutrientDisplayProps {
@@ -7,19 +8,32 @@ interface NutrientDisplayProps {
 export const NutrientDisplay: React.FC<NutrientDisplayProps> = ({ recipe }) => {
   return (
     <div className="nutrients">
-      <h4>Estimated Nutritional Info</h4>
-      {recipe.nutrients && (
-        <ul>
-          <li>Calories: {recipe.nutrients.calories}</li>
-          <li>Protein: {recipe.nutrients.protein}</li>
-          <li>Fat: {recipe.nutrients.fat}</li>
-          <li>Carbs: {recipe.nutrients.carbs}</li>
-          <li>Fiber: {recipe.nutrients.fiber}</li>
-          <li>Sugar: {recipe.nutrients.sugar}</li>
-          <li>Sodium: {recipe.nutrients.sodium}</li>
-          <li>Potassium: {recipe.nutrients.potassium}</li>
-        </ul>
-      )}
+      <List
+        size="default"
+        header={<strong className="text-white text-2xl">Estimated Nutritional Info</strong>}
+        dataSource={
+          recipe.nutrients
+            ? [
+                { label: "Calories", value: recipe.nutrients.calories },
+                { label: "Protein", value: recipe.nutrients.protein },
+                { label: "Fat", value: recipe.nutrients.fat },
+                { label: "Carbs", value: recipe.nutrients.carbs },
+                { label: "Fiber", value: recipe.nutrients.fiber },
+                { label: "Sugar", value: recipe.nutrients.sugar },
+                { label: "Sodium", value: recipe.nutrients.sodium },
+                { label: "Potassium", value: recipe.nutrients.potassium },
+              ]
+            : []
+        }
+        renderItem={(item) => (
+          <List.Item style={{ paddingTop: '4px', paddingBottom: '4px' }}>
+            <Typography.Text style={{ color: "white" }} className="flex pl-8 w-full">
+              <span className="w-64">{item.label}:</span>
+              <span>{item.value}</span>
+            </Typography.Text>
+          </List.Item>
+        )}
+      />
     </div>
   );
 };

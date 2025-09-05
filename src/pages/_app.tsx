@@ -2,6 +2,7 @@ import type { AppProps } from 'next/app';
 import Head from 'next/head';
 import { Geist, Geist_Mono, Roboto } from "next/font/google";
 import I18nProvider from "../components/i18n/i18n-provider";
+import { StyleProvider } from '@ant-design/cssinjs';
 
 import "../globals.css";
 
@@ -33,9 +34,11 @@ export default function MyApp({ Component, pageProps }: AppProps) {
           font-family: ${geistSans.style.fontFamily}, ${geistMono.style.fontFamily}, ${roboto.style.fontFamily};
         }
       `}</style>
-      <I18nProvider>
-        <Component {...pageProps} />
-      </I18nProvider>
+      <StyleProvider hashPriority="high">
+        <I18nProvider>
+          <Component {...pageProps} />
+        </I18nProvider>
+      </StyleProvider>
     </>
   );
 }

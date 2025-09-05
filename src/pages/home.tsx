@@ -1,55 +1,57 @@
-import type { MenuProps } from 'antd';
-import { Flex, Image, Menu } from 'antd';
-import { CoffeeOutlined, HomeOutlined } from '@ant-design/icons';
-import { useState } from "react";
+import { Flex, Image } from 'antd';
+import { useEffect, useState } from "react";
 import { useTranslation } from 'react-i18next';
-
-type MenuItem = Required<MenuProps>['items'][number];
-
-const items: MenuItem[] = [
-  {
-    label: 'Home',
-    key: 'home',
-    icon: <HomeOutlined />,
-  },
-  {
-    label: 'Recipe',
-    key: 'recipe',
-    icon: <CoffeeOutlined />,
-  },
-];
+import RecipeCard from '../components/recipeCard/RecipeCard';
+import { Recipe } from '../types/recipe';
+import TopNavBar from '../components/navBar/TopNavBar';
 
 const Home: React.FC = () => {
-    const [current, setCurrent] = useState('home');
     const { t } = useTranslation();
+    const [recipes, setRecipes] = useState<Recipe[]>([]);
 
-    const onClick: MenuProps['onClick'] = (e) => {
-        console.log('click ', e);
-        setCurrent(e.key);
-    };
+    useEffect(() => {
+      async function fetchRecipes() {
+        const res = await fetch('/api/recipes');
+        const data = await res.json();
+        setRecipes(data);
+      }
+  
+      fetchRecipes();
+    }, []);
 
     return (
         <div>
-          <Menu 
-              onClick={onClick} 
-              selectedKeys={[current]} 
-              mode="horizontal" 
-              items={items}
-              className='w-full justify-center'
-          />
-          <Flex className='w-full h-auto rounded-[6px] border border-transparent' justify='space-around' align='center'>
-            <p className='flex-1 mw-500 break-normal p-10 font-roboto text-lg'>
-              {t('pages.home.description')}
-            </p>
-            <div className='m-10'>
-              <Image
-                className='rounded-[4px] border'
-                width={500}
-                src='images/Birthday_Cake.png'
-                alt='birthday cake'
-              />
+          <TopNavBar/>
+          <div className="flex flex-col gap-6">
+            <div className="w-full flex justify-center">
+              <Flex 
+                className='w-full max-w-[1600px] mx-auto h-auto rounded-[6px] border border-transparent flex-wrap items-center justify-center flex-col md:flex-row'
+                justify='center' 
+                align='center'
+              >
+                <div className='flex justify-center w-full md:w-auto mt-4 md:mt-0 px-4 sm:px-6'>
+                  <img
+                    className='rounded-[4px] border w-full max-w-[500px] h-auto object-cover my-4 md:m-10'
+                    src='images/Birthday_Cake.png'
+                    alt='birthday cake'
+                  />
+                </div>
+                <p className='flex-1 min-w-[300px] max-w-[600px] break-normal p-4 md:p-10 font-roboto text-lg text-center md:text-left'>
+                  {t('pages.home.description')}
+                </p>
+              </Flex>
             </div>
-          </Flex>
+            <div className="flex justify-center">
+              <h1 className='text-2xl justify-self-center'>{t('pages.home.recent')}</h1>
+            </div>
+            <div className="grid grid-cols-[repeat(auto-fit,minmax(250px,1fr))] gap-6 justify-items-center ml-5 mr-5">
+              {recipes &&
+                [...recipes].slice(-6).reverse().map((recipe) => (
+                  <RecipeCard key={recipe.id} recipe={recipe} />
+                ))
+              }
+            </div>
+          </div>
         </div>
     );
 }
