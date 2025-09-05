@@ -9,6 +9,7 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@ant-design/cssinjs": "^1.24.0",
     "antd": "^5.27.2",
     "i18next": "^25.5.1",
     "i18next-http-backend": "^3.0.2",

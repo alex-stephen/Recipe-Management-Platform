@@ -1,10 +1,8 @@
-"use client";
-
 import { useState, useEffect } from 'react';
 import Image from "next/image";
-import PhotoUploader from './components/photos/PhotoUploader';
-import { Ingredient, Recipe } from './types/recipe';
-import { NutrientDisplay } from './components/nutrients/NutrientDisplay';
+import PhotoUploader from '../components/photos/PhotoUploader';
+import { Ingredient, Recipe } from '../types/recipe';
+import { NutrientDisplay } from '../components/nutrients/NutrientDisplay';
 import Link from 'next/link';
 
 const UNIT_OPTIONS = ["pcs", "g", "kg", "tsp", "tbsp", "ml", "L", "full", "1/2"];
