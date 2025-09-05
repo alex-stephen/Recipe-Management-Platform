@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextApiRequest, NextApiResponse } from "next";
 import { Ingredient } from "../../types/recipe";
 
 interface NutritionixFood {
@@ -24,13 +24,13 @@ interface Totals {
   potassium: number;
 }
 
-export async function POST(req: Request) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
-    const body = await req.json();
+    const body = req.body;
     const ingredients: Ingredient[] = body.ingredients;
 
     if (!ingredients || ingredients.length === 0) {
-      return NextResponse.json({ error: "No ingredients provided" }, { status: 400 });
+      return res.status(400).json({ error: "No ingredients provided" });
     }
 
     const NUTRITIONIX_ID = process.env.NUTRITIONIX_ID!;
@@ -58,7 +58,7 @@ export async function POST(req: Request) {
 
     if (!response.ok) {
       console.error("Nutritionix API returned error:", response.status, text);
-      return new NextResponse(JSON.stringify({ error: text }), { status: response.status });
+      return res.status(response.status).json({ error: text });
     }
 
     const data = JSON.parse(text);
@@ -99,9 +99,9 @@ export async function POST(req: Request) {
       potassium: `${Math.round(totals.potassium)} mg`,
     };
 
-    return NextResponse.json({ totals: formattedTotals, foods: data.foods });
+    return res.status(200).json({ totals: formattedTotals, foods: data.foods });
   } catch (err) {
     console.error("Error fetching nutrients:", err);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return res.status(500).json({ error: "Internal server error" });
   }
 }

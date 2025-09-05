@@ -1,4 +1,4 @@
-import { Recipe } from "@/app/types/recipe";
+import { Recipe } from "../../types/recipe";
 
 interface NutrientDisplayProps {
   recipe: Recipe;

@@ -1,5 +1,3 @@
-"use client";
-
 import type { MenuProps } from 'antd';
 import { Flex, Image, Menu } from 'antd';
 import { CoffeeOutlined, HomeOutlined } from '@ant-design/icons';
