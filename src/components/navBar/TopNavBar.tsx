@@ -13,7 +13,7 @@ const items: MenuItem[] = [
   },
   {
     label: 'Recipes',
-    key: '/recipes',
+    key: '/recipes/list',
     icon: <CoffeeOutlined />,
   },
 ];
